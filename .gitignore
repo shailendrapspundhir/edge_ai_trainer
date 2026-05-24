@@ -61,8 +61,10 @@ mlartifacts/
 *.tflite
 *.onnx
 
-# Local foundation models (large; not committed)
-* llm_foundation_models/
+# Foundation models — committed via Git LFS so clones work offline.
+# Negation patterns override the *.safetensors / *.bin rules above.
+!llm_foundation_models/
+!llm_foundation_models/**
 
 # Datasets (large; tracked by DVC instead)
 projects/*/data/raw/
