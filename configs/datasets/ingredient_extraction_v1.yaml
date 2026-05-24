@@ -1,0 +1,10 @@
+name: ingredient_extraction_v1
+kind: instruction
+source: local
+location: projects/food_health_coach/data/processed/ingredient_extraction_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: synthetic
+notes: >
+  Ingredient extraction: food name → ordered ingredient list with quantities. 10 common Indian dishes. Text-only format.

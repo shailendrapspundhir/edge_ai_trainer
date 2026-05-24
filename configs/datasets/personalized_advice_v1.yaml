@@ -1,0 +1,10 @@
+name: personalized_advice_v1
+kind: instruction
+source: local
+location: projects/food_health_coach/data/processed/personalized_advice_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: synthetic
+notes: >
+  Personalised advice: user profile + food → tailored eat/limit/avoid + specific quantities. 10 examples spanning T2D, PCOS, CKD, pregnancy, sports nutrition, paediatric, thyroid, IBD, osteoporosis, gout.

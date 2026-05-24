@@ -1,0 +1,13 @@
+name: cloud_vllm_gpu
+kind: container
+platform: cloud:vllm
+quantization: bf16
+runtime: vllm
+params:
+  base_image: vllm/vllm-openai:latest
+  gpu_min_vram_gb: 16
+  port: 8000
+  served_model_alias: model
+  dtype: bfloat16
+  max_model_len: 8192
+notes: vLLM container, OpenAI-compatible API. Cheap on L4 / A10G nodes for E2B–E4B.

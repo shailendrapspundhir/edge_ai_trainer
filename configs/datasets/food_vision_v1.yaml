@@ -1,0 +1,12 @@
+name: food_vision_v1
+kind: vision_pair
+source: local
+location: projects/food_health_coach/data/processed/food_vision_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: mixed
+notes: >
+  (image, structured-description) pairs for the vision branch. Sources:
+  Open Food Facts label images (CC-BY-SA), Food-101 subset re-annotated by
+  the teacher model. Populated post-data-gen step.

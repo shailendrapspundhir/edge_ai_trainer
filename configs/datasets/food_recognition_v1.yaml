@@ -1,0 +1,10 @@
+name: food_recognition_v1
+kind: vision_pair
+source: local
+location: projects/food_health_coach/data/processed/food_recognition_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: synthetic
+notes: >
+  Food visual recognition: image → food name + cuisine + visual description. Covers 10 common Indian dishes. Replace image placeholders with real image paths.

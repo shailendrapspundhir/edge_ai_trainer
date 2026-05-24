@@ -1,0 +1,12 @@
+name: qwen2.5-0.5b
+family: qwen2
+hf_id: Qwen/Qwen2.5-0.5B-Instruct
+multimodal: [text]
+effective_params_b: 0.5
+raw_params_b: 0.5
+license: apache-2.0
+gated: false
+default_dtype: bfloat16
+notes: >
+  Tiny ungated model used for smoke runs — no HF token required, downloads
+  in under a minute, full QLoRA loop runs in single-digit minutes on the 3070.

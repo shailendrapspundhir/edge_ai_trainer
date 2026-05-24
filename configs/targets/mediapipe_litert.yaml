@@ -1,0 +1,15 @@
+name: mediapipe_litert
+kind: mediapipe
+platform: android
+quantization: int4
+runtime: mediapipe
+params:
+  ai_edge_tools: google-ai-edge/ai-edge-torch
+  max_tokens: 1024
+  topk: 40
+  temperature: 0.7
+  random_seed: 42
+notes: >
+  MediaPipe LLM Inference `.task` bundle (LiteRT under the hood). Primary
+  Android production target — int4 weight-only, GPU delegate, designed for
+  Gemma 3n. Build path: HF safetensors -> ai-edge-torch quant -> .task bundle.

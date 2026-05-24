@@ -1,0 +1,66 @@
+# SkyPilot task: QLoRA text fine-tuning on a cheap single GPU.
+#
+# Launch:
+#   sky launch -c eat-train cloud/skypilot/tasks/train_qlora.yaml \
+#     --env PROJECT=food_health_coach \
+#     --env RECIPE=qlora_text \
+#     --env HUGGING_FACE_HUB_TOKEN=$HUGGING_FACE_HUB_TOKEN
+#
+# Tail logs:    sky logs eat-train
+# Stop:         sky stop eat-train
+# Down:         sky down eat-train
+#
+# Notes:
+#   - Defaults to RunPod (cheapest A10G/A100 spot). Change `cloud:` to swap providers.
+#   - Spot instances are enabled; SkyPilot handles preemption + auto-resume.
+#   - Optional S3 mount for `artifacts/` — set EAT_ARTIFACT_S3_BUCKET to enable.
+
+name: eat-train-qlora
+
+resources:
+  # A100:1 is the comfortable default for 7-12B QLoRA.
+  # A10G:1 (24GB) is the cheap option for <=7B models — uncomment to use.
+  accelerators: A100:1
+  # accelerators: A10G:1
+  cloud: runpod
+  use_spot: true
+  disk_size: 200
+
+num_nodes: 1
+
+workdir: .
+
+envs:
+  PROJECT: ""
+  RECIPE: qlora_text
+  HUGGING_FACE_HUB_TOKEN: ""
+  EAT_CLOUD_TRAIN_MAX_USD: "25"
+  EAT_CLOUD_TRAIN_MAX_HOURS: "6"
+  MLFLOW_TRACKING_URI: ""
+  EAT_ARTIFACT_S3_BUCKET: ""
+
+# --- Optional S3 mount for artifacts ---
+# Uncomment to persist artifacts/ to S3. Requires EAT_ARTIFACT_S3_BUCKET to be set
+# and AWS creds available on the launching machine.
+# file_mounts:
+#   /work/artifacts:
+#     source: s3://${EAT_ARTIFACT_S3_BUCKET}/eat/artifacts
+#     mode: MOUNT
+
+setup: |
+  set -euo pipefail
+  echo "[setup] installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  export PATH="$HOME/.local/bin:$PATH"
+  echo "[setup] uv sync --extra train..."
+  uv sync --extra train
+  echo "[setup] done."
+
+run: |
+  set -euo pipefail
+  export PATH="$HOME/.local/bin:$PATH"
+  : "${PROJECT:?PROJECT env var required}"
+  : "${RECIPE:?RECIPE env var required}"
+  echo "[run] PROJECT=${PROJECT} RECIPE=${RECIPE}"
+  echo "[run] budget cap: \$${EAT_CLOUD_TRAIN_MAX_USD:-25} / ${EAT_CLOUD_TRAIN_MAX_HOURS:-6}h"
+  uv run python -m eat run --project "${PROJECT}" --recipe "${RECIPE}"

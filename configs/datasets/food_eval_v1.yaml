@@ -1,0 +1,12 @@
+name: food_eval_v1
+kind: instruction
+source: local
+location: projects/food_health_coach/eval/seed_eval.jsonl
+splits:
+  eval: 0
+license: hand-curated
+notes: >
+  Held-out evaluation set — never trained on. Hand-curated for hard cases:
+  diabetic + sugary food, allergen edge cases, paediatric and pregnancy
+  scenarios, ambiguous portion sizes. Ships seeded; expand as the project
+  matures.

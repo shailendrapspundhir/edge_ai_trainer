@@ -1,0 +1,10 @@
+name: gguf_q4km
+kind: gguf
+platform: desktop
+quantization: Q4_K_M
+runtime: llama.cpp
+params:
+  llama_cpp_dir: ${LLAMA_CPP_DIR:-./vendor/llama.cpp}
+  context_length: 4096
+  use_imatrix: false
+notes: Primary edge format. Q4_K_M is the sweet spot for quality/size on Gemma 3n.

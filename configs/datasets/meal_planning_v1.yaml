@@ -1,0 +1,10 @@
+name: meal_planning_v1
+kind: instruction
+source: local
+location: projects/food_health_coach/data/processed/meal_planning_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: synthetic
+notes: >
+  Meal planning: user profile + calorie target → full-day Indian meal plan with macros. 2 detailed examples (T2D+HTN and pregnancy). Expand with synthetic generator.

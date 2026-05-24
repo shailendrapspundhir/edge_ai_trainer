@@ -1,0 +1,11 @@
+name: smoke_text
+kind: instruction
+source: hf
+location: tatsu-lab/alpaca
+splits:
+  train: 100
+  eval: 20
+license: cc-by-nc-4.0
+notes: >
+  Tiny slice used by the smoke recipe to verify the end-to-end pipeline
+  without touching the real food data. Capped to 100 train / 20 eval rows.

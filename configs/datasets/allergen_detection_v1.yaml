@@ -1,0 +1,10 @@
+name: allergen_detection_v1
+kind: instruction
+source: local
+location: projects/food_health_coach/data/processed/allergen_detection_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: synthetic
+notes: >
+  Allergen detection: food → allergens present (Big-9 + lactose/gluten), severity, cross-contact. 10 common Indian foods and packaged items.

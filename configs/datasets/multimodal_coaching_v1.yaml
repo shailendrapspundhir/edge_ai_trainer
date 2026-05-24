@@ -1,0 +1,10 @@
+name: multimodal_coaching_v1
+kind: instruction
+source: local
+location: projects/food_health_coach/data/processed/multimodal_coaching_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: synthetic
+notes: >
+  Multi-turn coaching sessions (2 examples). Vision + text turns, context tracking. Replace image placeholders with real images. Expand with synthetic generator + teacher LLM.

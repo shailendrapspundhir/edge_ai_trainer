@@ -1,0 +1,50 @@
+# Fly.io app template for the EAT CPU llama.cpp variant.
+#
+# Fly GPUs (L40) are expensive and limited — this template targets the cheap
+# CPU path. For GPU serving use RunPod / Modal instead.
+#
+# Usage:
+#   IMAGE=$EAT_CONTAINER_REGISTRY/llamacpp:$RUN_ID \
+#   EAT_FLY_APP=eat-$RUN_ID \
+#   envsubst < cloud/deploy/fly.toml > /tmp/fly.toml
+#   fly launch --no-deploy --copy-config --config /tmp/fly.toml
+#   fly volumes create eat_models --region iad --size 20
+#   fly deploy --config /tmp/fly.toml --image $IMAGE
+
+app           = "${EAT_FLY_APP}"
+primary_region = "iad"
+
+[build]
+  image = "${IMAGE}"
+
+[env]
+  LLAMA_HOST       = "0.0.0.0"
+  LLAMA_PORT       = "8080"
+  LLAMA_CTX_SIZE   = "4096"
+  LLAMA_THREADS    = "8"
+  LLAMA_MODEL_DIR  = "/models"
+  GGUF_FILE        = "model.Q4_K_M.gguf"
+
+[[mounts]]
+  source      = "eat_models"
+  destination = "/models"
+
+[http_service]
+  internal_port       = 8080
+  force_https         = true
+  auto_stop_machines  = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes            = ["app"]
+
+  [[http_service.checks]]
+    interval     = "30s"
+    timeout      = "5s"
+    grace_period = "30s"
+    method       = "GET"
+    path         = "/health"
+
+[[vm]]
+  cpu_kind  = "performance"
+  cpus      = 4
+  memory_mb = 8192

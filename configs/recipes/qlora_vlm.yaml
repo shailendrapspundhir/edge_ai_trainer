@@ -1,0 +1,27 @@
+name: qlora_vlm
+backend: hf_trl
+method: qlora
+base_model: gemma3n-e2b
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+lora_targets: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+freeze_vision: true
+freeze_audio: true
+quantization: nf4
+max_seq_len: 2048
+per_device_batch_size: 1
+grad_accum: 16
+epochs: 2.0
+learning_rate: 1.5e-4
+lr_scheduler: cosine
+warmup_ratio: 0.05
+optimizer: paged_adamw_8bit
+gradient_checkpointing: true
+eval_strategy: steps
+eval_steps: 200
+save_steps: 200
+notes: >
+  Multimodal (text + image) recipe. Vision encoder stays frozen in v1; we
+  train LoRA only on the language tower. Sequence length capped at 2048 to
+  leave room for image tokens within the 8 GB VRAM envelope.

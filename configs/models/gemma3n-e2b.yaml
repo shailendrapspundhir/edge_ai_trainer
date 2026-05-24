@@ -1,0 +1,13 @@
+name: gemma3n-e2b
+family: gemma3n
+hf_id: google/gemma-3n-E2B-it
+multimodal: [text, image, audio]
+effective_params_b: 2.0
+raw_params_b: 5.4
+license: gemma
+gated: true
+default_dtype: bfloat16
+notes: >
+  Gemma 3n E2B (instruction-tuned). Effective ~2B params on-device via
+  Per-Layer Embeddings + MatFormer. Vision encoder uses MobileNet-v5,
+  audio encoder is USM-derived. Fits 8 GB VRAM with QLoRA comfortably.

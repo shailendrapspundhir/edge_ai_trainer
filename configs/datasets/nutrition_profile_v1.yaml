@@ -1,0 +1,10 @@
+name: nutrition_profile_v1
+kind: instruction
+source: local
+location: projects/food_health_coach/data/processed/nutrition_profile_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: synthetic
+notes: >
+  Nutritional profile: food + serving size → macro/micro table + health note. 10 common Indian foods. Based on USDA/IFCT reference values.

@@ -1,0 +1,13 @@
+name: gemma3n-e4b
+family: gemma3n
+hf_id: google/gemma-3n-E4B-it
+multimodal: [text, image, audio]
+effective_params_b: 4.0
+raw_params_b: 8.0
+license: gemma
+gated: true
+default_dtype: bfloat16
+notes: >
+  Larger Gemma 3n variant. Trains with QLoRA on 8 GB VRAM only when vision +
+  audio are frozen, batch=1, max_seq_len ≤ 2048, gradient checkpointing on.
+  Use cloud_gpu compute for full multimodal LoRA.

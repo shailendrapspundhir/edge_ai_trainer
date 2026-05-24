@@ -1,0 +1,43 @@
+{
+  "_comment": [
+    "RunPod serverless endpoint template for an EAT-built inference image.",
+    "",
+    "Usage with the runpod CLI:",
+    "  envsubst < cloud/deploy/runpod_template.json > /tmp/eat_endpoint.json",
+    "  runpod endpoint create --config /tmp/eat_endpoint.json",
+    "",
+    "Usage with curl (raw API):",
+    "  IMAGE=$EAT_CONTAINER_REGISTRY/vllm:$RUN_ID envsubst < cloud/deploy/runpod_template.json | \\",
+    "    curl -X POST https://api.runpod.io/graphql \\",
+    "      -H \"Authorization: Bearer $RUNPOD_API_KEY\" \\",
+    "      -H 'Content-Type: application/json' -d @-",
+    "",
+    "Required env-substitutable variables: ${IMAGE}, ${EAT_RUN_ID}.",
+    "Optional: ${RUNPOD_NETWORK_VOLUME_ID} for persistent model storage."
+  ],
+  "name": "eat-${EAT_RUN_ID}",
+  "templateId": null,
+  "imageName": "${IMAGE}",
+  "gpuType": "NVIDIA L4",
+  "gpuCount": 1,
+  "containerDiskInGb": 30,
+  "volumeInGb": 0,
+  "volumeMountPath": "/models",
+  "networkVolumeId": "${RUNPOD_NETWORK_VOLUME_ID}",
+  "ports": "8000/http",
+  "env": [
+    { "key": "HUGGING_FACE_HUB_TOKEN", "value": "${HUGGING_FACE_HUB_TOKEN}" },
+    { "key": "EAT_RUN_ID", "value": "${EAT_RUN_ID}" },
+    { "key": "VLLM_SERVED_MODEL_NAME", "value": "model" },
+    { "key": "VLLM_MAX_MODEL_LEN", "value": "8192" }
+  ],
+  "scaler": {
+    "type": "QUEUE_DELAY",
+    "minWorkers": 0,
+    "maxWorkers": 3,
+    "idleTimeout": 300,
+    "scaleDownDelaySeconds": 60
+  },
+  "executionTimeout": 600,
+  "isServerless": true
+}

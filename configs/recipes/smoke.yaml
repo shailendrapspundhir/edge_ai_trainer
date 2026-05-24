@@ -1,0 +1,28 @@
+name: smoke
+backend: hf_trl
+method: qlora
+base_model: qwen2.5-0.5b
+lora_r: 8
+lora_alpha: 16
+lora_dropout: 0.05
+lora_targets: [q_proj, k_proj, v_proj, o_proj]
+freeze_vision: true
+freeze_audio: true
+quantization: nf4
+max_seq_len: 512
+per_device_batch_size: 1
+grad_accum: 4
+epochs: 1.0
+learning_rate: 2.0e-4
+lr_scheduler: linear
+warmup_ratio: 0.05
+optimizer: paged_adamw_8bit
+gradient_checkpointing: true
+eval_strategy: epoch
+eval_steps: 50
+save_steps: 50
+datasets: [smoke_text]
+notes: >
+  Tiny smoke recipe: Qwen2.5-0.5B + 100-row Alpaca slice. Used by `make smoke`
+  to validate the full pipeline (data → train → eval → export → bench) in
+  under 15 minutes without needing a HF token or gated model.

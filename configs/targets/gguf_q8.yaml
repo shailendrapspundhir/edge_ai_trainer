@@ -1,0 +1,8 @@
+name: gguf_q8
+kind: gguf
+platform: desktop
+quantization: Q8_0
+runtime: llama.cpp
+params:
+  context_length: 4096
+notes: Near-lossless quality reference for desktop eval; not for mobile.

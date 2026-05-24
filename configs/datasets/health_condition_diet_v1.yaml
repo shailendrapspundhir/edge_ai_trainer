@@ -1,0 +1,10 @@
+name: health_condition_diet_v1
+kind: instruction
+source: local
+location: projects/food_health_coach/data/processed/health_condition_diet_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: synthetic
+notes: >
+  Health condition dietary guidance: condition + food → eat/limit/avoid + reason + portion + alternatives. 10 condition-food pairs covering T2D, HTN, CKD, PCOS, pregnancy, anaemia, gout, etc.

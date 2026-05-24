@@ -1,0 +1,54 @@
+# SkyPilot task: QLoRA VLM (vision-language) fine-tuning.
+#
+# Launch:
+#   sky launch -c eat-train-vlm cloud/skypilot/tasks/train_qlora_vlm.yaml \
+#     --env PROJECT=food_health_coach \
+#     --env RECIPE=qlora_vlm \
+#     --env HUGGING_FACE_HUB_TOKEN=$HUGGING_FACE_HUB_TOKEN
+#
+# Notes:
+#   - VLMs (Gemma 3n, Llava, etc.) need >=24GB VRAM during QLoRA; A100:1 is the floor.
+#   - Spot enabled, RunPod default. Switch cloud: aws / gcp / lambda as needed.
+
+name: eat-train-qlora-vlm
+
+resources:
+  accelerators: A100:1
+  cloud: runpod
+  use_spot: true
+  disk_size: 300
+
+num_nodes: 1
+
+workdir: .
+
+envs:
+  PROJECT: ""
+  RECIPE: qlora_vlm
+  HUGGING_FACE_HUB_TOKEN: ""
+  EAT_CLOUD_TRAIN_MAX_USD: "40"
+  EAT_CLOUD_TRAIN_MAX_HOURS: "8"
+  MLFLOW_TRACKING_URI: ""
+  EAT_ARTIFACT_S3_BUCKET: ""
+
+# file_mounts:
+#   /work/artifacts:
+#     source: s3://${EAT_ARTIFACT_S3_BUCKET}/eat/artifacts
+#     mode: MOUNT
+
+setup: |
+  set -euo pipefail
+  echo "[setup] installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  export PATH="$HOME/.local/bin:$PATH"
+  echo "[setup] uv sync --extra train..."
+  uv sync --extra train
+
+run: |
+  set -euo pipefail
+  export PATH="$HOME/.local/bin:$PATH"
+  : "${PROJECT:?PROJECT env var required}"
+  : "${RECIPE:?RECIPE env var required}"
+  echo "[run] PROJECT=${PROJECT} RECIPE=${RECIPE}"
+  echo "[run] budget cap: \$${EAT_CLOUD_TRAIN_MAX_USD:-40} / ${EAT_CLOUD_TRAIN_MAX_HOURS:-8}h"
+  uv run python -m eat run --project "${PROJECT}" --recipe "${RECIPE}"

@@ -1,0 +1,11 @@
+name: cloud_llamacpp_cpu
+kind: container
+platform: cloud:llamacpp
+quantization: Q4_K_M
+runtime: llama.cpp-server
+params:
+  base_image: ghcr.io/ggerganov/llama.cpp:server
+  port: 8080
+  n_threads: 8
+  ctx_size: 4096
+notes: CPU-only llama.cpp-server image. Cheapest option; lower throughput.

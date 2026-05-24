@@ -1,0 +1,10 @@
+name: food_substitution_v1
+kind: instruction
+source: local
+location: projects/food_health_coach/data/processed/food_substitution_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: synthetic
+notes: >
+  Food substitution: food + restriction → ordered swap options with ratio, taste note, nutrition comparison. 10 common Indian ingredients: rice, sugar, ghee, paneer, atta, milk, fried snacks, maida, salt, juice.

@@ -1,0 +1,95 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.eggs/
+*.egg-info/
+*.egg
+.installed.cfg
+
+# Build
+build/
+dist/
+*.whl
+
+# uv
+.uv/
+uv.lock
+
+# Tooling caches
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.cache/
+.hypothesis/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Project artifacts (gitignored — big binaries)
+artifacts/
+runs/
+checkpoints/
+exports/
+mlruns/
+mlartifacts/
+*.gguf
+*.bin
+*.safetensors
+*.task
+*.tflite
+*.onnx
+
+# Local foundation models (large; not committed)
+* llm_foundation_models/
+
+# Datasets (large; tracked by DVC instead)
+projects/*/data/raw/
+projects/*/data/processed/
+projects/*/data/cache/
+.dvc/cache
+.dvc/tmp
+
+# Logs
+logs/
+*.log
+
+# Local DBs
+*.sqlite
+*.sqlite3
+*.db
+
+# Docker
+.docker/
+
+# Android
+android/bench_app/.gradle/
+android/bench_app/build/
+android/bench_app/app/build/
+android/bench_app/local.properties
+android/bench_app/captures/
+android/bench_app/.idea/
+
+# OS
+Thumbs.db

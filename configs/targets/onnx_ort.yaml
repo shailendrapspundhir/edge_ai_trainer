@@ -1,0 +1,9 @@
+name: onnx_ort
+kind: onnx
+platform: desktop
+quantization: int8
+runtime: onnxruntime
+params:
+  opset: 17
+  optimize_level: all
+notes: ONNX Runtime export — secondary target, useful for non-Gemma models later.

@@ -1,0 +1,10 @@
+name: portion_guidance_v1
+kind: instruction
+source: local
+location: projects/food_health_coach/data/processed/portion_guidance_v1.jsonl
+splits:
+  train: 0
+  eval: 0
+license: synthetic
+notes: >
+  Portion size guidance: food description → estimated grams + calories + visual anchor. 10 common Indian and universal foods.

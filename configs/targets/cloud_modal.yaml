@@ -1,0 +1,11 @@
+name: cloud_modal
+kind: container
+platform: cloud:modal
+quantization: bf16
+runtime: vllm
+params:
+  gpu: L4
+  container_idle_timeout: 300
+  allow_concurrent_inputs: 16
+  base_target: cloud_vllm_gpu
+notes: Modal deployment wrapper around the vLLM container. Scale-to-zero, serverless GPU.
