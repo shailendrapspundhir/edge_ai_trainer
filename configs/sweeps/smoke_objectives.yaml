@@ -1,0 +1,6 @@
+# Minimal objectives for smoke / CI testing — just minimise loss.
+
+objectives:
+  - metric: train_loss
+    direction: minimize
+    weight: 1.0

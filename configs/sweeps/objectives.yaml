@@ -1,0 +1,15 @@
+# Multi-objective specification for the sweep engine.
+# The ASHA scheduler scalarises these (weighted sum) to rank trials.
+
+objectives:
+  - metric: train_loss
+    direction: minimize
+    weight: 1.0
+
+  - metric: tokens_per_sec
+    direction: maximize
+    weight: 0.1
+
+  - metric: peak_mem_mb
+    direction: minimize
+    weight: 0.001

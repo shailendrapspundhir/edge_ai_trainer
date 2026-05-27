@@ -43,6 +43,7 @@ android_app = typer.Typer(help="Benchmark on a connected Android device.", no_ar
 cloud_app = typer.Typer(help="Build, deploy, and benchmark cloud serving containers.", no_args_is_help=True)
 eval_app = typer.Typer(help="Run quality, safety, or perf evaluation on a run.", no_args_is_help=True)
 data_app = typer.Typer(help="Prepare, inspect, and manage training datasets.", no_args_is_help=True)
+sweep_app = typer.Typer(help="Hyperparameter sweep engine — ASHA-scheduled multi-objective search.", no_args_is_help=True)
 
 app.add_typer(registry_app, name="registry")
 app.add_typer(project_app, name="project")
@@ -52,6 +53,7 @@ app.add_typer(android_app, name="android")
 app.add_typer(cloud_app, name="cloud")
 app.add_typer(eval_app, name="eval")
 app.add_typer(data_app, name="data")
+app.add_typer(sweep_app, name="sweep")
 
 console = Console()
 log = get_logger("cli")
@@ -459,6 +461,62 @@ def eval_perf(run_id: str, runtime: str = "llama.cpp", quant: str = "Q4_K_M") ->
     from eat.eval import perf
     report = perf.evaluate(run_id, runtime=runtime, quant=quant)
     console.print_json(json.dumps(report))
+
+
+# ---------------------------------------------------------------------------
+# sweep
+# ---------------------------------------------------------------------------
+
+
+@sweep_app.command("run")
+def sweep_run(
+    project: str = typer.Option(..., help="Project name."),
+    recipe: str = typer.Option(..., help="Base recipe to sweep over."),
+    search_space: Path = typer.Option(..., help="Path to search_space.yaml."),
+    objectives: Path = typer.Option(..., help="Path to objectives.yaml."),
+    data_path: Path = typer.Option(..., help="Path to training data JSONL."),
+    model_path: Path = typer.Option(..., help="Path to local model directory."),
+    output_dir: Path = typer.Option("./sweep_output", help="Output directory for sweep artefacts."),
+    max_trials: int = typer.Option(6, help="Maximum number of HP trials."),
+    asha_max_rung: int = typer.Option(3, help="ASHA max rung (number of halving rounds)."),
+    asha_reduction: int = typer.Option(3, help="ASHA reduction factor (keep 1/N at each rung)."),
+    asha_min_epochs: float = typer.Option(1.0, help="Epochs at rung 0."),
+    seed: Optional[int] = typer.Option(None, help="Random seed for reproducibility."),
+) -> None:
+    """Launch an ASHA-scheduled hyperparameter sweep."""
+    from eat.sweep.config import load_objectives, load_search_space
+    from eat.sweep.engine import run_sweep
+
+    ss = load_search_space(search_space)
+    obj = load_objectives(objectives)
+
+    console.print(f"[bold cyan]Sweep[/bold cyan]: {max_trials} trials, "
+                  f"{len(ss.params)} HP axes, {len(obj.objectives)} objectives")
+    console.print(f"  ASHA: rungs={asha_max_rung} reduction={asha_reduction} min_epochs={asha_min_epochs}")
+
+    import sys
+    result = run_sweep(
+        project=project,
+        recipe=recipe,
+        search_space=ss,
+        objectives=obj,
+        max_trials=max_trials,
+        data_path=str(data_path),
+        model_path=str(model_path),
+        output_dir=str(output_dir),
+        asha_max_rung=asha_max_rung,
+        asha_reduction_factor=asha_reduction,
+        asha_min_epochs=asha_min_epochs,
+        log_file=sys.stdout,
+        seed=seed,
+    )
+
+    console.print(f"\n[bold green]Sweep complete[/bold green]: {result.id}")
+    console.print(f"  Status: {result.status.value}")
+    console.print(f"  Best trial: {result.best_trial_id}")
+    summary = Path(output_dir) / result.id / "sweep_summary.json"
+    if summary.exists():
+        console.print(f"  Summary: {summary}")
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,15 @@
+# Minimal search space for smoke / CI testing of the sweep engine.
+
+params:
+  - name: learning_rate
+    type: log_uniform
+    low: 1.0e-4
+    high: 5.0e-4
+
+  - name: lora_r
+    type: choice
+    choices: [8, 16]
+
+  - name: lora_alpha
+    type: choice
+    choices: [16, 32]

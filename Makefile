@@ -1,4 +1,5 @@
-.PHONY: help install install-train install-all sync fmt lint test test-e2e test-e2e-quick clean \
+.PHONY: help install install-train install-all sync fmt lint test test-e2e test-e2e-quick \
+        test-sweep clean \
         redis orchestrator worker-gpu worker-cpu worker-android worker-cloud \
         dashboard smoke train-demo collect-data project-init
 
@@ -53,6 +54,9 @@ test-e2e:
 
 test-e2e-quick:
 	bash tests/e2e/test_training_pipeline.sh --quick
+
+test-sweep:
+	bash tests/e2e/test_sweep_engine.sh
 
 clean:
 	rm -rf build dist *.egg-info .pytest_cache .ruff_cache .mypy_cache

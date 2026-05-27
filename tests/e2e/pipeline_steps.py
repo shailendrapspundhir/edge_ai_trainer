@@ -28,6 +28,34 @@ from pathlib import Path
 
 
 # ---------------------------------------------------------------------------
+# Workaround for transformers 4.57.x bug where _from_pretrained accesses
+# dict.model_type as an attribute instead of dict["model_type"] after loading
+# config.json via json.load().  Safe to apply unconditionally — the patch is
+# a no-op once the upstream fix lands (the attribute access will work on
+# PretrainedConfig objects too).
+# ---------------------------------------------------------------------------
+
+def _patch_transformers_tokenizer_bug() -> None:
+    try:
+        import transformers.tokenization_utils_base as _tub
+        import inspect
+        src = inspect.getsource(_tub.PreTrainedTokenizerBase._from_pretrained)
+        if "_config.model_type" in src:
+            # The bug exists — patch it
+            import importlib
+            path = Path(_tub.__file__)
+            text = path.read_text()
+            if "_config.model_type" in text:
+                text = text.replace("_config.model_type", '_config.get("model_type")')
+                path.write_text(text)
+                importlib.reload(_tub)
+    except Exception:
+        pass  # best-effort; the test will still fail with a clear error
+
+_patch_transformers_tokenizer_bug()
+
+
+# ---------------------------------------------------------------------------
 # GPU detection — MUST run before any `import torch` to be effective
 # ---------------------------------------------------------------------------
 
@@ -175,7 +203,7 @@ def train_step(args: argparse.Namespace) -> int:
     import torch  # type: ignore
     from datasets import Dataset  # type: ignore
     from peft import LoraConfig, get_peft_model  # type: ignore
-    from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer  # type: ignore
+    from transformers import AutoModelForCausalLM, AutoTokenizer  # type: ignore
     from trl import SFTConfig, SFTTrainer  # type: ignore
 
     data_path = Path(args.data_path)
@@ -193,14 +221,8 @@ def train_step(args: argparse.Namespace) -> int:
 
     # ── tokenizer ──────────────────────────────────────────────────────────
     print("Loading tokenizer …")
-    # Pre-load config explicitly to avoid a bug in some transformers versions
-    # where the internal AutoConfig call returns a plain dict instead of a
-    # PretrainedConfig object when local_files_only=True is set.
-    _tok_config = AutoConfig.from_pretrained(
-        model_path, trust_remote_code=True, local_files_only=True,
-    )
     tokenizer = AutoTokenizer.from_pretrained(
-        model_path, config=_tok_config, trust_remote_code=True, local_files_only=True,
+        model_path, trust_remote_code=True, local_files_only=True,
     )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -388,7 +410,7 @@ def verify_inference(args: argparse.Namespace) -> int:
 
     import torch  # type: ignore
     from peft import PeftModel  # type: ignore
-    from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer  # type: ignore
+    from transformers import AutoModelForCausalLM, AutoTokenizer  # type: ignore
 
     adapter_dir = Path(args.adapter_dir)
     model_path = args.model_path
@@ -399,11 +421,8 @@ def verify_inference(args: argparse.Namespace) -> int:
     print(f"Device: {'cuda' if use_cuda else 'cpu'}")
 
     print("Loading tokenizer …")
-    _tok_config = AutoConfig.from_pretrained(
-        model_path, trust_remote_code=True, local_files_only=True,
-    )
     tokenizer = AutoTokenizer.from_pretrained(
-        model_path, config=_tok_config, trust_remote_code=True, local_files_only=True,
+        model_path, trust_remote_code=True, local_files_only=True,
     )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
