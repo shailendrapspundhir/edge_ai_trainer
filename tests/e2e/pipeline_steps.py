@@ -175,7 +175,7 @@ def train_step(args: argparse.Namespace) -> int:
     import torch  # type: ignore
     from datasets import Dataset  # type: ignore
     from peft import LoraConfig, get_peft_model  # type: ignore
-    from transformers import AutoModelForCausalLM, AutoTokenizer  # type: ignore
+    from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer  # type: ignore
     from trl import SFTConfig, SFTTrainer  # type: ignore
 
     data_path = Path(args.data_path)
@@ -193,8 +193,14 @@ def train_step(args: argparse.Namespace) -> int:
 
     # ── tokenizer ──────────────────────────────────────────────────────────
     print("Loading tokenizer …")
-    tokenizer = AutoTokenizer.from_pretrained(
+    # Pre-load config explicitly to avoid a bug in some transformers versions
+    # where the internal AutoConfig call returns a plain dict instead of a
+    # PretrainedConfig object when local_files_only=True is set.
+    _tok_config = AutoConfig.from_pretrained(
         model_path, trust_remote_code=True, local_files_only=True,
+    )
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_path, config=_tok_config, trust_remote_code=True, local_files_only=True,
     )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -382,7 +388,7 @@ def verify_inference(args: argparse.Namespace) -> int:
 
     import torch  # type: ignore
     from peft import PeftModel  # type: ignore
-    from transformers import AutoModelForCausalLM, AutoTokenizer  # type: ignore
+    from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer  # type: ignore
 
     adapter_dir = Path(args.adapter_dir)
     model_path = args.model_path
@@ -393,8 +399,11 @@ def verify_inference(args: argparse.Namespace) -> int:
     print(f"Device: {'cuda' if use_cuda else 'cpu'}")
 
     print("Loading tokenizer …")
-    tokenizer = AutoTokenizer.from_pretrained(
+    _tok_config = AutoConfig.from_pretrained(
         model_path, trust_remote_code=True, local_files_only=True,
+    )
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_path, config=_tok_config, trust_remote_code=True, local_files_only=True,
     )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
